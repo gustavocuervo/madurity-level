@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Assessment de Madurez en IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080810;--surface:#11111e;--surface2:#1a1a2e;--surface3:#22223a;--accent:#6ee7b7;--accent2:#818cf8;--accent3:#f472b6;--accent4:#fbbf24;--text:#f1f5f9;--muted:#64748b;--border:rgba(255,255,255,0.07);--radius:16px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.15;}
+.orb1{width:500px;height:500px;background:var(--accent2);top:-150px;right:-150px;animation:drift 14s ease-in-out infinite alternate;}
+.orb2{width:350px;height:350px;background:var(--accent);bottom:-100px;left:-100px;animation:drift 18s ease-in-out infinite alternate-reverse;}
+.orb3{width:250px;height:250px;background:var(--accent3);top:45%;left:35%;animation:drift 11s ease-in-out infinite alternate;}
+@keyframes drift{from{transform:translate(0,0);}to{transform:translate(40px,25px);}}
+.app{position:relative;z-index:1;max-width:540px;margin:0 auto;padding:0 16px 100px;}
+header{padding:32px 0 20px;text-align:center;}
+.badge{display:inline-block;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);border:1px solid rgba(110,231,183,0.4);padding:4px 14px;border-radius:100px;margin-bottom:16px;}
+h1{font-family:'Syne',sans-serif;font-size:clamp(20px,5.5vw,28px);font-weight:800;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.subtitle{font-size:13px;color:var(--muted);line-height:1.6;max-width:360px;margin:0 auto;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:12px;}
+.card-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:18px;}
+.field{margin-bottom:16px;}
+label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;font-family:'Syne',sans-serif;letter-spacing:0.5px;text-transform:uppercase;}
+label span.req{color:var(--accent3);margin-left:2px;}
+input[type=email],input[type=text],select{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s,background 0.2s;appearance:none;-webkit-appearance:none;}
+input[type=email]:focus,input[type=text]:focus,select:focus{border-color:var(--accent2);background:rgba(129,140,248,0.06);}
+input::placeholder{color:var(--muted);}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+select option{background:#1a1a2e;color:var(--text);}
+.field-error{font-size:11px;color:var(--accent3);margin-top:4px;display:none;}
+.btn{border:none;border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;cursor:pointer;transition:all 0.2s ease;-webkit-tap-highlight-color:transparent;padding:14px 20px;}
+.btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--bg);width:100%;}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(110,231,183,0.25);}
+.btn-primary:active{transform:translateY(0);}
+.btn-primary:disabled{opacity:0.3;cursor:not-allowed;transform:none;}
+.btn-ghost{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+.btn-ghost:hover{color:var(--text);border-color:var(--accent2);}
+.intro-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0;}
+.stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 8px;text-align:center;}
+.stat-n{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--accent);display:block;}
+.stat-l{font-size:11px;color:var(--muted);}
+.progress-wrap{margin:16px 0;}
+.progress-info{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.progress-bar-bg{height:4px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:4px;transition:width 0.5s cubic-bezier(.4,0,.2,1);}
+.question-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:12px;animation:slideIn 0.35s cubic-bezier(.4,0,.2,1);}
+@keyframes slideIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.q-meta{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.q-num{font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:var(--accent);background:rgba(110,231,183,0.1);padding:3px 10px;border-radius:100px;}
+.q-cat{font-size:11px;color:var(--muted);font-weight:500;}
+.q-peso{margin-left:auto;font-size:10px;color:var(--accent2);font-family:'Syne',sans-serif;font-weight:700;}
+.q-text{font-size:15px;font-weight:500;line-height:1.55;margin-bottom:20px;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--surface2);border:1.5px solid transparent;border-radius:12px;cursor:pointer;transition:all 0.2s ease;-webkit-tap-highlight-color:transparent;}
+.option:hover{border-color:var(--accent2);background:rgba(129,140,248,0.07);}
+.option.selected{border-color:var(--accent);background:rgba(110,231,183,0.07);}
+.option-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--muted);flex-shrink:0;margin-top:1px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;}
+.option.selected .option-dot{border-color:var(--accent);background:var(--accent);}
+.option.selected .option-dot::after{content:'';width:8px;height:8px;background:var(--bg);border-radius:50%;}
+.option-letter{font-family:'Syne',sans-serif;font-size:10px;font-weight:800;color:var(--muted);flex-shrink:0;margin-top:3px;}
+.option.selected .option-letter{color:var(--accent);}
+.option-text{font-size:13px;line-height:1.5;color:#cbd5e1;}
+.option.selected .option-text{color:var(--text);}
+.nav{display:flex;gap:10px;margin-top:4px;}
+.nav .btn{flex:1;}
+.score-display{text-align:center;padding:36px 24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;position:relative;overflow:hidden;}
+.score-display::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent2),var(--accent),var(--accent3));}
+.score-label{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.score-number{font-family:'Syne',sans-serif;font-size:80px;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+.score-total{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.stage-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 20px;border-radius:100px;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;}
+.stage-1{background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3);}
+.stage-2{background:rgba(251,191,36,0.15);color:var(--accent4);border:1px solid rgba(251,191,36,0.3);}
+.stage-3{background:rgba(110,231,183,0.15);color:var(--accent);border:1px solid rgba(110,231,183,0.3);}
+.services-list{display:flex;flex-direction:column;gap:6px;}
+.service-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border-radius:10px;font-size:13px;color:#cbd5e1;}
+.service-item::before{content:'→';color:var(--accent);font-weight:700;flex-shrink:0;}
+.breakdown-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.breakdown-row:last-child{margin-bottom:0;}
+.breakdown-cat{font-size:12px;font-weight:500;color:var(--muted);min-width:110px;flex-shrink:0;}
+.breakdown-bar-bg{flex:1;height:6px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.breakdown-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width 1s cubic-bezier(.4,0,.2,1);}
+.breakdown-pts{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--accent);min-width:22px;text-align:right;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface);border:1px solid var(--accent);border-radius:100px;padding:10px 20px;font-size:13px;color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;transition:transform 0.4s cubic-bezier(.4,0,.2,1);z-index:1000;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.admin-toggle{text-align:center;margin-top:20px;}
+.admin-link{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;background:none;border:none;font-family:'DM Sans',sans-serif;padding:4px;}
+.admin-link:hover{color:var(--accent2);}
+.admin-panel{display:none;margin-top:8px;}
+.admin-panel.open{display:block;animation:slideIn 0.3s cubic-bezier(.4,0,.2,1);}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.admin-header h2{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
+.record-count{font-size:12px;color:var(--muted);}
+.table-wrap{overflow-x:auto;margin-bottom:16px;border-radius:12px;border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:580px;}
+th{background:var(--surface2);color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:10px 12px;text-align:left;}
+td{padding:10px 12px;border-top:1px solid var(--border);color:#cbd5e1;vertical-align:middle;}
+tr:hover td{background:var(--surface2);}
+.score-cell{font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);}
+.stage-pill{display:inline-block;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;font-family:'Syne',sans-serif;}
+.admin-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-csv{background:linear-gradient(135deg,var(--accent4),#f97316);color:var(--bg);padding:12px 20px;font-size:12px;border-radius:10px;flex:1;border:none;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-csv:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(251,191,36,0.25);}
+.btn-clear{background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.3);padding:12px 20px;font-size:12px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty-state .empty-icon{font-size:32px;margin-bottom:8px;}
+.empty-state p{font-size:13px;}
+.info-row{display:flex;gap:8px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.info-chip{font-size:12px;color:var(--muted);}
+.info-chip strong{color:var(--text);font-weight:500;}
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+
+<div class="app">
+  <header>
+    <div class="badge">Customer Readiness Tool</div>
+    <h1>Assessment de Madurez en Inteligencia Artificial</h1>
+    <p class="subtitle">Evaluación del nivel de preparación de su organización para la adopción de IA</p>
+  </header>
+
+  <!-- STEP 1: DATOS -->
+  <div id="step-datos">
+    <div class="card">
+      <div class="card-title">📋 Datos de la sesión</div>
+      <div class="field">
+        <label>Correo del vendedor <span class="req">*</span></label>
+        <input type="email" id="f-email" placeholder="vendedor@empresa.com">
+        <div class="field-error" id="err-email">Ingresa un correo válido</div>
+      </div>
+      <div class="field">
+        <label>Nombre de la empresa <span class="req">*</span></label>
+        <input type="text" id="f-empresa" placeholder="Ej: Acme Corporation">
+        <div class="field-error" id="err-empresa">Este campo es requerido</div>
+      </div>
+      <div class="field">
+        <label>Perfil del cliente <span class="req">*</span></label>
+        <select id="f-perfil">
+          <option value="">— Selecciona el perfil —</option>
+          <option>Personal de IT</option>
+          <option>Gerente General</option>
+          <option>Sub-Gerente</option>
+          <option>Gerente de Finanzas</option>
+          <option>Gerente de Marketing</option>
+          <option>Gerente de Recursos Humanos</option>
+          <option>Gerente de Auditoría</option>
+          <option>Gerente de Transformación / Innovación</option>
+          <option>Gerente de Operaciones</option>
+          <option>Gerente de Legal / Cumplimiento</option>
+          <option>Gerente de Ventas</option>
+          <option>Gerente de Customer Success</option>
+        </select>
+        <div class="field-error" id="err-perfil">Selecciona un perfil</div>
+      </div>
+    </div>
+    <div class="intro-stats">
+      <div class="stat-box"><span class="stat-n">10</span><span class="stat-l">Preguntas</span></div>
+      <div class="stat-box"><span class="stat-n">~5</span><span class="stat-l">Minutos</span></div>
+      <div class="stat-box"><span class="stat-n">3</span><span class="stat-l">Etapas</span></div>
+    </div>
+    <button class="btn btn-primary" onclick="startAssessment()">COMENZAR ASSESSMENT →</button>
+    <div class="admin-toggle">
+      <button class="admin-link" onclick="toggleAdmin()">⚙ Panel de Administración</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: QUIZ -->
+  <div id="step-quiz" style="display:none;">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="prog-label">Pregunta 1 de 10</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar" id="prog-bar" style="width:0%"></div></div>
+    </div>
+    <div class="question-card" id="q-card">
+      <div class="q-meta">
+        <span class="q-num" id="q-num">01</span>
+        <span class="q-cat" id="q-cat"></span>
+        <span class="q-peso" id="q-peso"></span>
+      </div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="options-container"></div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-ghost" id="btn-back" onclick="goBack()" style="display:none;">← Anterior</button>
+      <button class="btn btn-primary" id="btn-next" onclick="goNext()" disabled>Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: RESULTADOS -->
+  <div id="step-results" style="display:none;">
+    <div class="info-row">
+      <span class="info-chip">✉️ <strong id="r-email">—</strong></span>
+      <span class="info-chip">🏢 <strong id="r-empresa">—</strong></span>
+      <span class="info-chip">👤 <strong id="r-perfil">—</strong></span>
+      <span class="info-chip">📅 <strong id="r-datetime">—</strong></span>
+    </div>
+    <div class="score-display">
+      <div class="score-label">Puntuación Ponderada Total</div>
+      <div class="score-number" id="score-num">0</div>
+      <div class="score-total">sobre 100 puntos</div>
+      <div class="stage-badge" id="stage-badge">—</div>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 Descripción de tu etapa</div>
+      <p style="font-size:13px;color:#94a3b8;line-height:1.7;" id="stage-desc"></p>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:16px;">📊 Detalle por categoría</div>
+      <div id="breakdown-rows"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🚀 Servicios recomendados</div>
+      <div class="services-list" id="services-list"></div>
+    </div>
+    <button class="btn btn-ghost" onclick="restart()" style="width:100%;margin-top:4px;">↩ Nuevo Assessment</button>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="admin-panel" class="admin-panel">
+    <div class="card">
+      <div class="admin-header">
+        <h2>Panel de Administración</h2>
+        <span class="record-count" id="rec-count">0 registros</span>
+      </div>
+      <div id="table-container">
+        <div class="empty-state"><div class="empty-icon">📭</div><p>Aún no hay registros guardados.</p></div>
+      </div>
+      <div class="admin-actions" style="margin-top:16px;">
+        <button class="btn-csv" onclick="downloadCSV()">⬇ Descargar CSV</button>
+        <button class="btn-clear" onclick="clearRecords()">🗑 Borrar todo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Guardado</div>
+
+<script>
+const questions=[
+  {num:1,peso:0.09,cat:'Conocimiento',text:'¿Qué nivel de conocimiento tiene la organización sobre IA?',options:[{label:'a',text:'Conocimiento muy limitado, apenas están familiarizándose con el concepto',pts:1},{label:'b',text:'Conocimiento básico, han investigado y consumido contenido sobre IA',pts:2},{label:'c',text:'Conocimiento intermedio, entienden aplicaciones y casos de uso',pts:3},{label:'d',text:'Conocimiento avanzado, tienen claridad sobre implementación',pts:4}]},
+  {num:2,peso:0.12,cat:'Casos de Uso',text:'¿La organización tiene casos de uso de IA identificados?',options:[{label:'a',text:'No tienen casos de uso identificados',pts:1},{label:'b',text:'Tienen ideas vagas pero sin documentar',pts:2},{label:'c',text:'Tienen 1-3 casos de uso claramente identificados',pts:3},{label:'d',text:'Tienen múltiples casos de uso priorizados y documentados',pts:4}]},
+  {num:3,peso:0.14,cat:'Presupuesto',text:'¿Existe presupuesto asignado para iniciativas de IA?',options:[{label:'a',text:'No hay presupuesto asignado',pts:1},{label:'b',text:'Están explorando opciones de presupuesto',pts:2},{label:'c',text:'Tienen presupuesto aprobado para evaluación/planeación',pts:3},{label:'d',text:'Tienen presupuesto aprobado para implementación',pts:4}]},
+  {num:4,peso:0.13,cat:'Liderazgo',text:'¿Qué nivel de apoyo ejecutivo tienen las iniciativas de IA?',options:[{label:'a',text:'No hay interés ejecutivo formal',pts:1},{label:'b',text:'Hay curiosidad a nivel ejecutivo',pts:2},{label:'c',text:'Hay un sponsor ejecutivo comprometido',pts:3},{label:'d',text:'Es una prioridad estratégica de la alta dirección',pts:4}]},
+  {num:5,peso:0.10,cat:'Experimentación',text:'¿Han realizado alguna prueba o experimento con IA?',options:[{label:'a',text:'No han experimentado con IA',pts:1},{label:'b',text:'Han usado herramientas públicas de IA (ChatGPT, Copilot, etc.)',pts:2},{label:'c',text:'Han realizado pruebas de concepto internas o con proveedores',pts:3},{label:'d',text:'Tienen pilotos en ejecución o implementaciones parciales',pts:4}]},
+  {num:6,peso:0.08,cat:'Equipo',text:'¿Cuentan con equipo dedicado a iniciativas de IA?',options:[{label:'a',text:'No hay equipo asignado',pts:1},{label:'b',text:'Hay personas interesadas pero sin rol formal',pts:2},{label:'c',text:'Tienen un equipo pequeño o personas asignadas parcialmente',pts:3},{label:'d',text:'Tienen un equipo dedicado con roles definidos',pts:4}]},
+  {num:7,peso:0.15,cat:'Datos',text:'¿Cuál es el estado de sus datos para IA?',options:[{label:'a',text:'No han evaluado sus datos',pts:1},{label:'b',text:'Saben que tienen datos pero no están seguros de su calidad',pts:2},{label:'c',text:'Están evaluando y preparando sus datos',pts:3},{label:'d',text:'Tienen datos estructurados, accesibles y de calidad',pts:4}]},
+  {num:8,peso:0.07,cat:'Urgencia',text:'¿Qué urgencia tiene la organización para implementar IA?',options:[{label:'a',text:'Es un tema de interés futuro — exploración',pts:1},{label:'b',text:'Quieren entender cómo aplicarlo este año',pts:2},{label:'c',text:'Necesitan definir estrategia y comenzar en 3-6 meses',pts:3},{label:'d',text:'Necesitan implementar soluciones en los próximos meses',pts:4}]},
+  {num:9,peso:0.07,cat:'Métricas',text:'¿Han definido métricas de éxito para sus iniciativas de IA?',options:[{label:'a',text:'No han pensado en métricas',pts:1},{label:'b',text:'Tienen ideas generales de lo que quieren lograr',pts:2},{label:'c',text:'Tienen KPIs preliminares definidos',pts:3},{label:'d',text:'Tienen métricas claras y alineadas con objetivos de negocio',pts:4}]},
+  {num:10,peso:0.05,cat:'Acompañamiento',text:'¿Qué tipo de acompañamiento buscan?',options:[{label:'a',text:'Educación y sensibilización sobre IA',pts:1},{label:'b',text:'Ayuda para definir estrategia y casos de uso',pts:2},{label:'c',text:'Validación de ideas y pruebas de concepto',pts:3},{label:'d',text:'Implementación y puesta en producción',pts:4}]},
+];
+const stages=[
+  {range:[0,33],label:'1. Exploración',cls:'stage-1',desc:'Las organizaciones en esta etapa recién están comenzando con la IA. Están aprendiendo y experimentando con la IA en áreas seleccionadas.',services:['Workshop de Evolución de Ideas','Webinars de Adopción y Sensibilización','Casos de Uso y Estudios de Mercado','AI Data Ready','Innovation Studio']},
+  {range:[34,66],label:'2. Planeación',cls:'stage-2',desc:'Las organizaciones en esta etapa están evaluando, definiendo y planificando activamente una estrategia de IA, ejecutando pruebas de concepto y planificando implementaciones.',services:['Workshop de Alineación Estratégica','Validación de la IDEA (Express)','Industry Use Cases','Programa Ejecutivo de IA','Convenios de Colaboración / Co-desarrollo']},
+  {range:[67,100],label:'3. Pruebas y Producción',cls:'stage-3',desc:'Las organizaciones en esta etapa están pasando de las pruebas de concepto y los pilotos a los ambientes productivos.',services:['Product Discovery - Validaciones','Product Delivery - Plan de despliegue','Desarrollo de Casos en operación','Transición del MVP a un producto o servicio']},
+];
+
+let current=0,answers=new Array(10).fill(null),sessionData={};
+const STORAGE_KEY='assessment-ia-v2';
+
+async function loadRecords(){
+  try{const r=await window.storage.get(STORAGE_KEY,true);return r?JSON.parse(r.value):[];}
+  catch(e){return[];}
+}
+async function saveRecord(rec){
+  try{const records=await loadRecords();records.push(rec);await window.storage.set(STORAGE_KEY,JSON.stringify(records),true);}
+  catch(e){console.error(e);}
+}
+
+function validateDatos(){
+  let ok=true;
+  const email=document.getElementById('f-email').value.trim();
+  const empresa=document.getElementById('f-empresa').value.trim();
+  const perfil=document.getElementById('f-perfil').value;
+  const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  setError('err-email',!emailOk); if(!emailOk)ok=false;
+  setError('err-empresa',!empresa); if(!empresa)ok=false;
+  setError('err-perfil',!perfil); if(!perfil)ok=false;
+  return ok;
+}
+function setError(id,show){document.getElementById(id).style.display=show?'block':'none';}
+
+function startAssessment(){
+  if(!validateDatos())return;
+  const now=new Date();
+  sessionData={
+    email:document.getElementById('f-email').value.trim(),
+    empresa:document.getElementById('f-empresa').value.trim(),
+    perfil:document.getElementById('f-perfil').value,
+    date:now.toLocaleDateString('es-PA',{day:'2-digit',month:'2-digit',year:'numeric'}),
+    time:now.toLocaleTimeString('es-PA',{hour:'2-digit',minute:'2-digit'}),
+  };
+  document.getElementById('step-datos').style.display='none';
+  document.getElementById('step-quiz').style.display='block';
+  current=0; answers=new Array(10).fill(null); renderQuestion();
+}
+
+function renderQuestion(){
+  const q=questions[current];
+  const pct=Math.round((current/10)*100);
+  document.getElementById('prog-label').textContent=`Pregunta ${current+1} de 10`;
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-bar').style.width=pct+'%';
+  document.getElementById('q-num').textContent=String(q.num).padStart(2,'0');
+  document.getElementById('q-cat').textContent=q.cat;
+  document.getElementById('q-peso').textContent=`Peso: ${Math.round(q.peso*100)}%`;
+  document.getElementById('q-text').textContent=q.text;
+  const container=document.getElementById('options-container');
+  container.innerHTML='';
+  q.options.forEach((opt,i)=>{
+    const div=document.createElement('div');
+    div.className='option'+(answers[current]===i?' selected':'');
+    div.innerHTML=`<div class="option-dot"></div><span class="option-letter">${opt.label})</span><span class="option-text">${opt.text}</span>`;
+    div.onclick=()=>selectOption(i);
+    container.appendChild(div);
+  });
+  document.getElementById('btn-back').style.display=current>0?'block':'none';
+  const bn=document.getElementById('btn-next');
+  bn.disabled=answers[current]===null;
+  bn.textContent=current===9?'Ver Resultados ✓':'Siguiente →';
+  const card=document.getElementById('q-card');
+  card.style.animation='none';card.offsetHeight;card.style.animation='slideIn 0.35s cubic-bezier(.4,0,.2,1)';
+}
+function selectOption(idx){
+  answers[current]=idx;
+  document.querySelectorAll('.option').forEach((el,i)=>el.classList.toggle('selected',i===idx));
+  document.getElementById('btn-next').disabled=false;
+}
+function goNext(){if(answers[current]===null)return;if(current<9){current++;renderQuestion();}else showResults();}
+function goBack(){if(current>0){current--;renderQuestion();}}
+
+function calcScore(){
+  let num=0,den=0;
+  questions.forEach((q,i)=>{const pts=answers[i]!==null?q.options[answers[i]].pts:0;num+=q.peso*pts;den+=q.peso;});
+  return Math.round((num/(4*den))*100);
+}
+
+async function showResults(){
+  document.getElementById('step-quiz').style.display='none';
+  document.getElementById('step-results').style.display='block';
+  const score=calcScore();
+  const stage=stages.find(s=>score>=s.range[0]&&score<=s.range[1]);
+  document.getElementById('r-email').textContent=sessionData.email;
+  document.getElementById('r-empresa').textContent=sessionData.empresa;
+  document.getElementById('r-perfil').textContent=sessionData.perfil;
+  document.getElementById('r-datetime').textContent=`${sessionData.date} ${sessionData.time}`;
+  document.getElementById('stage-badge').textContent=stage.label;
+  document.getElementById('stage-badge').className='stage-badge '+stage.cls;
+  document.getElementById('stage-desc').textContent=stage.desc;
+  document.getElementById('services-list').innerHTML=stage.services.map(s=>`<div class="service-item">${s}</div>`).join('');
+  document.getElementById('breakdown-rows').innerHTML=questions.map((q,i)=>{
+    const pts=answers[i]!==null?q.options[answers[i]].pts:0;
+    return`<div class="breakdown-row"><span class="breakdown-cat">${q.cat}</span><div class="breakdown-bar-bg"><div class="breakdown-bar" style="width:${(pts/4)*100}%"></div></div><span class="breakdown-pts">${pts}/4</span></div>`;
+  }).join('');
+  let n=0;const iv=setInterval(()=>{n+=Math.ceil(score/40);if(n>=score){n=score;clearInterval(iv);}document.getElementById('score-num').textContent=n;},30);
+  const record={correo_vendedor:sessionData.email,nombre_empresa:sessionData.empresa,perfil_cliente:sessionData.perfil,date:sessionData.date,time:sessionData.time,puntuacion:score,etapa:stage.label};
+  await saveRecord(record);
+  showToast('✓ Resultado guardado correctamente');
+  document.getElementById('step-results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function restart(){
+  document.getElementById('step-results').style.display='none';
+  document.getElementById('step-datos').style.display='block';
+  answers=new Array(10).fill(null);current=0;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+let adminOpen=false;
+async function toggleAdmin(){
+  adminOpen=!adminOpen;
+  const panel=document.getElementById('admin-panel');
+  panel.classList.toggle('open',adminOpen);
+  if(adminOpen){await renderAdminTable();panel.scrollIntoView({behavior:'smooth',block:'start'});}
+}
+
+async function renderAdminTable(){
+  const records=await loadRecords();
+  document.getElementById('rec-count').textContent=`${records.length} registro${records.length!==1?'s':''}`;
+  const container=document.getElementById('table-container');
+  if(records.length===0){container.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><p>Aún no hay registros guardados.</p></div>`;return;}
+  const sc=(e)=>e.includes('1')?'stage-1':e.includes('2')?'stage-2':'stage-3';
+  container.innerHTML=`<div class="table-wrap"><table><thead><tr><th>Correo Vendedor</th><th>Empresa</th><th>Perfil</th><th>Fecha</th><th>Hora</th><th>Puntuación</th><th>Etapa</th></tr></thead><tbody>${records.slice().reverse().map(r=>`<tr><td>${r.correo_vendedor}</td><td>${r.nombre_empresa}</td><td>${r.perfil_cliente}</td><td>${r.date}</td><td>${r.time}</td><td class="score-cell">${r.puntuacion}</td><td><span class="stage-pill ${sc(r.etapa)}">${r.etapa}</span></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+async function downloadCSV(){
+  const records=await loadRecords();
+  if(records.length===0){showToast('⚠ No hay registros para exportar');return;}
+  const headers=['Correo Vendedor','Nombre Empresa','Perfil Cliente','Fecha','Hora','Puntuacion','Etapa'];
+  const rows=records.map(r=>[r.correo_vendedor,r.nombre_empresa,r.perfil_cliente,r.date,r.time,r.puntuacion,r.etapa].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+  const csv=[headers.join(','),...rows].join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`assessment-ia-${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  URL.revokeObjectURL(url);showToast('⬇ CSV descargado');
+}
+
+async function clearRecords(){
+  if(!confirm('¿Borrar TODOS los registros? Esta acción no se puede deshacer.'))return;
+  try{await window.storage.set(STORAGE_KEY,JSON.stringify([]),true);await renderAdminTable();showToast('🗑 Registros eliminados');}
+  catch(e){showToast('Error al borrar');}
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
